@@ -1,0 +1,37 @@
+---
+title: "BugSigDB Dashboard"
+author: "Chloe Mirzayi and Sehyun Oh"
+format: dashboard
+editor: visual
+server: shiny
+---
+
+```{r}
+#| context: setup
+library(bugsigdbr)
+library(bugSigSimple)
+library(BugSigDBStats)
+library(dplyr)
+library(shiny)
+full.dat <- bugsigdbr::importBugSigDB(version = "devel", cache = FALSE)
+```
+# {.toolbar}
+```{r}
+textInput("condition", "Condition", "atopic asthma")
+```
+
+```{r}
+tableOutput("table")
+```
+
+
+```{r}
+#| context: server
+
+ds <- reactive({
+  createTaxonTable(full.dat[full.dat$Condition == input$condition,])[,1:6]
+})
+
+output$table <- renderTable(ds())
+```
+
